@@ -12,29 +12,57 @@ interface AuthModalProps {
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   
   const { login } = useAuth();   // ← Added this
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    setTimeout(() => {
-      // Demo user data (you can change this later when connecting real backend)
-      const userData = {
-        name: activeTab === "signup" ? "Rahul Sharma" : "Rahul Sharma",
-        email: "rahul@company.com",
-        avatar: "https://picsum.photos/id/64/200/200",
-      };
+  try {
+    const response = await fetch(
+      "https://business-application-blitzx.onrender.com//auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      }
+    );
 
-      login(userData);           // ← This connects with Navbar
+    const data = await response.json();
 
-      onClose();
-      setIsLoading(false);
-    }, 1500);
-  };
+    if (!response.ok) {
+      throw new Error(data.detail);
+    }
+
+    localStorage.setItem(
+      "token",
+      data.access_token
+    );
+
+    login({
+      name: data.user.name,
+      email: data.user.email,
+      avatar: "/default-avatar.png",
+    });
+
+    onClose();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -83,6 +111,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                   className="w-full pl-11 pr-5 py-3 rounded-2xl border border-gray-200 focus:border-blue-600 outline-none"
                   placeholder="Rahul Sharma"
@@ -97,6 +127,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full pl-11 pr-5 py-3 rounded-2xl border border-gray-200 focus:border-blue-600 outline-none"
                 placeholder="hello@yourcompany.com"
@@ -110,6 +142,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full pl-11 pr-5 py-3 rounded-2xl border border-gray-200 focus:border-blue-600 outline-none"
                 placeholder="••••••••"

@@ -94,7 +94,12 @@ def login(user: UserLogin):
 
     return {
         "message": "Login successful",
-        "access_token": token
+        "access_token": token,
+        "user": {
+            "id": db_user.id,
+            "name": db_user.name,
+            "email": db_user.email
+        }
     }
 
 
