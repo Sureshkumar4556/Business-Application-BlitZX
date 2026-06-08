@@ -26,7 +26,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   try {
     const response = await fetch(
-      "https://business-application-blitzx.onrender.com//auth/login",
+      "https://business-application-blitzx.onrender.com/login",
       {
         method: "POST",
         headers: {
