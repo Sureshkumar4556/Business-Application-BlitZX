@@ -76,5 +76,5 @@ def login(user: UserLogin):
     )
 
     return {
-        "access_token": token
+        "access_token": token,
     }

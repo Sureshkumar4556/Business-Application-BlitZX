@@ -26,7 +26,7 @@ app.add_middleware(
 
 
 
-@app.post("/auth/signup")
+@app.post("/signup")
 def signup(user: UserSignup):
 
     print(user.password)
@@ -61,7 +61,7 @@ def signup(user: UserSignup):
     }
 
 
-@app.post("/auth/login")
+@app.post("/login")
 def login(user: UserLogin):
 
     db = SessionLocal()
